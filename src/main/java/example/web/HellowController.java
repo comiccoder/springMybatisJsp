@@ -18,7 +18,7 @@ public class HellowController {
     @RequestMapping("/hellow")
     public ModelAndView getListaUtentiView(){
         ModelMap model = new ModelMap();
-        model.addAttribute("name", "Spring Boot");
+        model.addAttribute("name", "张三");
         return new ModelAndView("hellow", model);
     }
 }

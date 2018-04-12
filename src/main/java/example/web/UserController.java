@@ -4,9 +4,11 @@ import example.domain.User;
 import example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -16,9 +18,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/list/all")
-    public List<User> listAll() {
-        return userService.listAll();
+    @GetMapping("/userList")
+    public ModelAndView listAll()
+    {
+        ModelMap modelMap = new ModelMap();
+        List <User>  returnUser = userService.listAll();
+        //要返回的数据
+        modelMap.addAttribute("list",returnUser);
+
+        return new ModelAndView("userList", modelMap);
     }
 
     @RequestMapping("/page1")
