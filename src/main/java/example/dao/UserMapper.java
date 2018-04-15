@@ -1,5 +1,6 @@
-package example.domain;
+package example.dao;
 
+import example.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -9,5 +10,6 @@ import java.util.List;
 public interface UserMapper {
     @Select("select * from user")
     List<User> selectallAll();
+
 }
 

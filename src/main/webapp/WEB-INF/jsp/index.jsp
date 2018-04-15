@@ -7,10 +7,13 @@
     <title>index</title>
 </head>
 <body>
+
+
+
 当前系统时间：<br />
-<font size=3 color=red>Time：${time }</font>
+<font size=3 color=red>Time：${time}</font>
 
 <br />
-Message：${message }
+Message：${message}
 </body>
 </html>

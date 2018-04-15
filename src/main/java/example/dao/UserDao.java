@@ -1,22 +1,33 @@
 package example.dao;
 
-import example.domain.User;
+import example.entity.User;
+import example.entity.UserVo;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
-import org.springframework.stereotype.Component;
 
 @Mapper
-public interface UserDao {
-
+public interface UserDao
+{
     //选择出所有用户
     List<User> selectAll();
+    User findUser(int userId);      //--- 用户的id
+    void addUser(User user);        //添加用户
+    int getCount();
 
-    int deleteByPrimaryKey(Integer id);
-    int insert(User record);
-    int insertSelective(User record);
-    User selectByPrimaryKey(Integer id);
-    int updateByPrimaryKeySelective(User record);
-    int updateByPrimaryKey(User record);
+    //查找用户是否存在
+    User selectUserByName(@Param("userName")String name, @Param("pageSize")String pass);
+
+    List<User> getUserByPage(@Param("startRow")int startRow, @Param("pageSize")int pageSize);
+
+    //Vo分页
+    List<UserVo> getUserVoByPage(@Param("startRow")int startRow, @Param("pageSize")int pageSize);
 
 }
+
+
+
+
+
+

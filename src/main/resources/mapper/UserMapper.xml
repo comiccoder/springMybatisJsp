@@ -3,13 +3,68 @@
 
 <mapper namespace="example.dao.UserDao" >
 
-  <select  id="selectAll" resultType="User">
-      select
-      id as id,
-      name as name,
-      birthday as birthday,
-      address as address
-      from user u
-  </select>
+     <select  id="selectAll"  resultType="User">
+          select
+          id as id,
+          name as name,
+          birthday as birthday,
+          address as address
+          from user u
+    </select>
+
+    <select  id="findUser"  resultType="User">
+          select
+            id as id,
+            name as name,
+            birthday as birthday,
+            address as address
+          from user u
+          where id= #{userId}
+    </select>
+
+    <!-- 插入并返回主键   -->
+    <insert id="addUser">
+        INSERT INTO user
+        (
+            name,
+            birthday,
+            address
+        ) VALUES
+        (
+            #{name},
+            #{birthday},
+            #{address}
+        )
+    </insert>
+
+    <!-- 分页使用SQL -->
+    <select id="getUserByPage"  resultType="User" >
+        select * from user limit #{startRow},#{pageSize}
+    </select>
+
+    <!-- 获取符合条件的总条数 -->
+    <select id="getCount" resultType="int">
+            select count(1) from user
+    </select>
+
+    <!-- 选择出符合条件的用户-->
+    <select id ="selectUserByName" resultType="User" parameterType="User">
+        select * from user where name=#{userName} and pass=#{pass}
+    </select>
+
+    <select  id="getUserVoByPage"  resultType="UserVo">
+        select
+        u.id as id,
+        u.name as name,
+        u.birthday as birthday,
+        u.address as address,
+        ul.level_name as levelName
+        from user u,user_level ul
+        where u.id=ul.id
+        limit #{startRow},#{pageSize}
+    </select>
 
 </mapper>
+
+
+
