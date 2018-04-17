@@ -1,7 +1,9 @@
 package example.web;
 
+import example.entity.Permission;
 import example.entity.User;
 import example.entity.UserVo;
+import example.service.PermissionService;
 import example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,13 +15,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequestMapping("user")
 @Controller
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @GetMapping("/userList")
     public ModelAndView listAll()
@@ -122,26 +129,41 @@ public class UserController {
     /******************************************
      ////***login相关
      *****************************************/
-    @RequestMapping(value="/login",method = RequestMethod.GET)
+    @RequestMapping(value="login",method = RequestMethod.GET)
     public String login()
     {
         return "login/login";
     }
 
+    //发起请求
     @RequestMapping(value="login",method = RequestMethod.POST )
-    public String login(User user,
+    public String login(       User user,
                                HttpSession session,
                                HttpServletRequest request,
                                HttpServletResponse response)
     {
         User myUser = null;
+        List<Permission> perms=new ArrayList<Permission>();
+        Set<Permission> perms_set=new HashSet<Permission>();
+
         if(user!=null)
         {
-            myUser=userService.selectUserByName(user.getName(),user.getPass());
+            myUser=userService.selectUserByName(user.getUserName(),user.getPassword());
 
             if(myUser!=null)
             {
                 session.setAttribute("user",myUser);
+
+                perms= permissionService.getPermissionByUserId(myUser.getId());
+
+                Set<String> perms_str= new HashSet<String>();
+
+                for(Permission perm:perms)
+                {
+                    perms_str.add(perm.getPermission());
+                }
+
+                session.setAttribute("perms",perms_str);
                 return "redirect:../hellow";
             }else
             {

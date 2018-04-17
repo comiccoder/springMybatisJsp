@@ -20,7 +20,7 @@ public class mySpringMVCConfig extends WebMvcConfigurerAdapter
 {
     @Bean
     public  MyInterceptor myInterceptor()
-    {   return  new MyInterceptor();    }
+    {   return  new MyInterceptor();  }
 
 
     //拦截器对哪些链接有效

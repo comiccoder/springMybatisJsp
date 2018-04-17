@@ -2,56 +2,75 @@ package example.entity;
 
 public class User {
     private int id;
-    private String name;
+    private String userName;
     private String birthday;
+    private String realName;
     private String address;
-    private String pass;
+    private String password;
+    private int   state;
 
     // 构造方法
     public User() {
         super();
     }
 
-    public User(int id, String name, String birthday, String address) {
-        super();
-        this.id = id;
-        this.name = name;
-        this.birthday = birthday;
-        this.address = address;
-    }
 
     // getter & setter
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
-    public String getName() {
-        return name;
+
+    public String getUserName() {
+        return userName;
     }
-    public void setName(String name) {
-        this.name = name;
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
+
     public String getBirthday() {
         return birthday;
     }
+
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
     public String getAddress() {
         return address;
     }
+
     public void setAddress(String address) {
         this.address = address;
     }
 
-    public String getPass() {
-        return pass;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }
 

@@ -49,7 +49,7 @@
 
     <!-- 选择出符合条件的用户-->
     <select id ="selectUserByName" resultType="User" parameterType="User">
-        select * from user where name=#{userName} and pass=#{pass}
+        select * from user where user_name=#{userName} and password=#{pass}
     </select>
 
     <select  id="getUserVoByPage"  resultType="UserVo">

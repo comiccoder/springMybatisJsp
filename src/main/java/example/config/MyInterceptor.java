@@ -1,6 +1,9 @@
 package example.config;
 
-import org.apache.commons.lang.StringUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import example.entity.JResult;
+import example.entity.StatusCode;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,25 +25,44 @@ public class MyInterceptor implements HandlerInterceptor {
             HttpServletResponse response,
             Object handler) throws Exception
     {
+        String requestUri = request.getRequestURI(); //请求完整路径，可用于登陆后跳转
+        String contextPath = request.getContextPath();  //项目下完整路径
+        String url = requestUri.substring(contextPath.length()); //请求页面，以后可以在登陆后再打开
+
         Object obj = request.getSession().getAttribute("user");
 
         System.out.println("自定义拦截器。。。。");
-        if(null == obj)
+        if(null==obj)
         {
             System.out.println("用户未登陆");
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=utf-8");
-            PrintWriter out = null;
-            out = response.getWriter();
-            out.append("你还没有登陆，请登陆去");
+            if (request.getHeader("x-requested-with") != null && request.getHeader("x-requested-with").equalsIgnoreCase("XMLHttpRequest")) {
+                //如果是ajax请求响应头会有，x-requested-with
+                System.out.print("发生ajax请求...");
+                //返回正常的权限
+                JResult result = new JResult();
+                result.setCode(StatusCode.FAIL.getValue()).setContent(null).setMsg("请登陆访问");
 
-            response.sendRedirect("/user/login");  //直接跳转到login页面
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/json;charset=utf-8");
 
-            return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+                PrintWriter out=null;
+                out = response.getWriter();
+                String out_str=JSON.toJSONString(result);
+                out.append(out_str);
+
+                return false;  //拦住之后，在页面提示，让用户自己去登陆
+            }else
+            {
+                //如果是jsp的登陆请求，那么直接跳过
+                //if(url.equals(""))
+                System.out.println("当前请求的url是:"+url);
+                //强制转到login页面
+                response.sendRedirect("/user/login");
+                return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+            }
         }else
         {
             System.out.println("用户已登陆");
-
             //查看当前的用户是否有相对的权限
             // 将handler强转为HandlerMethod, 前面已经证实这个handler就是HandlerMethod
             HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -66,23 +88,48 @@ public class MyInterceptor implements HandlerInterceptor {
 
                 // 这里我为了方便是直接参数传入权限, 在实际操作中应该是从参数中获取用户Id
                 // 到数据库权限表中查询用户拥有的权限集合, 与set集合中的权限进行对比完成权限校验
-
                 //这里初始化了一个用户的权限，正确的方式应该是到数据库中查找
-                Set<String> permitSet = new HashSet<String>() {{
-                    add("admin");
-                    add("normal");
-                    add("common");
-                }};
+
+
+                Set<String> perms_session = new HashSet<String>();
+                perms_session =(HashSet<String>) request.getSession().getAttribute("perms");
 
                 boolean isOk=true;  //是否有权限不存在
-                for (String authority : authSet) {
-                    if(!permitSet.contains(authority)) isOk=false;
-                    break;
+                for (String authority : authSet)
+                {
+                    //System.out.println(authority);
+                    if(!perms_session.contains(authority))
+                    {
+                        isOk=false;
+                        break;
+                    }
                 }
 
+                //当前没有权限
                 if(!isOk)
                 {
-                    response.sendRedirect("noAuth");
+                    if (request.getHeader("x-requested-with") != null && request.getHeader("x-requested-with").equalsIgnoreCase("XMLHttpRequest")) {
+                        //如果是ajax请求响应头会有，x-requested-with
+                        System.out.print("发生ajax请求...");
+                        //返回正常的权限
+                        JResult result = new JResult();
+                        result.setCode(StatusCode.FAIL.getValue()).setContent(null).setMsg("没有该页面权限");
+
+                        response.setCharacterEncoding("UTF-8");
+                        response.setContentType("application/json;charset=utf-8");
+
+                        PrintWriter out=null;
+                        out = response.getWriter();
+                        String out_str=JSON.toJSONString(result);
+                        out.append(out_str);
+
+                        return false;  //拦住之后，在页面提示，让用户自己去登陆
+                    }else
+                    {
+                        //强制转到login页面
+                        response.sendRedirect("noAuth");
+                        return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+                    }
                 }
             }
             return true;
