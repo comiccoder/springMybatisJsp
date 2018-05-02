@@ -1,8 +1,9 @@
 package example.entity;
 
-/**
- * Created by AB053735 on 2018/4/15.
- */
+/****************************************
+ * 用来展示用户列表的网页
+ **************************************/
+
 public class UserVo {
 
     private int id;

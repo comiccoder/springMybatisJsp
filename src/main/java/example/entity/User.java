@@ -1,7 +1,7 @@
 package example.entity;
 
 public class User {
-    private int id;
+     private int id;
     private String userName;
     private String birthday;
     private String realName;

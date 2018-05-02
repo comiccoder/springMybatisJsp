@@ -7,7 +7,6 @@ import example.entity.StatusCode;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -15,10 +14,8 @@ import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
-
-public class MyInterceptor implements HandlerInterceptor {
-
-
+public class MyInterceptor implements HandlerInterceptor
+{
     @Override
     public boolean preHandle(
             HttpServletRequest request,
@@ -32,6 +29,7 @@ public class MyInterceptor implements HandlerInterceptor {
         Object obj = request.getSession().getAttribute("user");
 
         System.out.println("自定义拦截器。。。。");
+        //如果没有登陆
         if(null==obj)
         {
             System.out.println("用户未登陆");
@@ -53,18 +51,22 @@ public class MyInterceptor implements HandlerInterceptor {
                 return false;  //拦住之后，在页面提示，让用户自己去登陆
             }else
             {
-                //如果是jsp的登陆请求，那么直接跳过
-                //if(url.equals(""))
-                System.out.println("当前请求的url是:"+url);
-                //强制转到login页面
-                response.sendRedirect("/user/login");
-                return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+                //System.out.println("当前请求的url是:"+url);
+                //如果请求的是admin相关的路径，就转到到admin的登录页面 匹配  /admin**这样的路径
+                String regex = "^/{1}(?:admin){1}[\\w-_/?&=#%:]*$";
+                if(url.matches(regex)){
+                    request.getRequestDispatcher("/noAuth/adminLogin").forward(request,response);
+                    return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+                }else
+                {
+                    request.getRequestDispatcher("/noAuth/login").forward(request,response);
+                    return false;  //当返回true，是继续执行之后请求链；返回false 就停止当前请求了
+                }
             }
         }else
         {
             System.out.println("用户已登陆");
-            //查看当前的用户是否有相对的权限
-            // 将handler强转为HandlerMethod, 前面已经证实这个handler就是HandlerMethod
+            //查看当前的用户是否有相对的权限// 将handler强转为HandlerMethod, 前面已经证实这个handler就是HandlerMethod
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             // 从方法处理器中获取出要调用的方法
             Method method = handlerMethod.getMethod();

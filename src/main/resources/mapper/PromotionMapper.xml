@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="example.dao.PromotionDao" >
+
+    <!-- 选择出符合条件的用户-->
+    <select id ="getPromotionVoByPage" resultType="PromotionVo">
+       select
+        p.id as id,
+        p.promotion_name as promotionName,
+        p.promotion_content as promotionContent,
+        p.start_time as startTime,
+        p.end_time as endTime,
+        p.public_name as publicName,
+        <choose>
+            <when  test="userId != null and userId != -1">
+                IFNULL(
+                (
+                select
+                pa.id
+                from promotion_apply pa
+                where 1=1
+                and p.id=pa.promotion_id
+                and pa.user_id =  #{userId}
+                ), 0 ) as applyState
+            </when>
+            <otherwise>
+                0 as applyState
+            </otherwise>
+        </choose>
+        from
+        promotion p ORDER BY  update_time DESC
+        limit #{startRow},#{pageSize}
+    </select>
+
+    <!-- 获取符合条件的总条数 -->
+    <select id="getCount" resultType="int">
+        select count(1) from promotion
+    </select>
+
+
+    <!-- 保存用户  -->
+    <insert id="addPromotion">
+
+        INSERT INTO promotion
+        (
+            promotion_name,
+            promotion_content ,
+            start_time ,
+            end_time,
+            public_name,
+            update_time
+        ) VALUES
+        (
+            #{promotionName},
+            #{promotionContent},
+            #{startTime},
+            #{endTime},
+            #{publicName},
+            #{updateTime}
+        )
+
+    </insert>
+
+    <delete id="deletePromotionById">
+        delete from promotion where id = #{promotionId}
+    </delete>
+
+    <update id="updatePromotion">
+        UPDATE  promotion set
+            promotion_name=#{promotionName},
+            promotion_content =#{promotionContent},
+            public_name=#{publicName},
+        where id=#{id}
+    </update>
+
+    <!-- 选择出符合条件的用户-->
+    <select id ="getPromotionById" resultType="Promotion">
+        select
+        p.id as id,
+        p.promotion_name as promotionName,
+        p.promotion_content as promotionContent,
+        p.start_time as startTime,
+        p.end_time as endTime,
+        p.public_name as publicName
+
+        from
+        promotion p
+        where p.id=#{promotionId}
+    </select>
+
+
+
+</mapper>
+
+
+

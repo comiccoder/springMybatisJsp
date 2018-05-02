@@ -126,56 +126,48 @@ public class UserController {
     }
 
 
+
     /******************************************
-     ////***login相关
+     //按照分页来列出用户信息
+     //page是指当当前选择看的是第几页，默认是空
      *****************************************/
-    @RequestMapping(value="login",method = RequestMethod.GET)
-    public String login()
+    @RequestMapping("/userPage")
+    public ModelAndView listPage(String page,Model model)
     {
-        return "login/login";
-    }
+        int pageSize=10;  //每页显示10条，一般这个设置放在属性文件中
+        List<User> users = new ArrayList<User>();
 
-    //发起请求
-    @RequestMapping(value="login",method = RequestMethod.POST )
-    public String login(       User user,
-                               HttpSession session,
-                               HttpServletRequest request,
-                               HttpServletResponse response)
-    {
-        User myUser = null;
-        List<Permission> perms=new ArrayList<Permission>();
-        Set<Permission> perms_set=new HashSet<Permission>();
+        int count;  //记录总数
+        count = userService.getCount();
 
-        if(user!=null)
+        //获取出符合条件的用户到底有都少条
+        if(null == page) {  //如果为空
+            page = "1";
+        }
+
+        //总页数
+        int pageTimes;
+        if(count%pageSize == 0)
         {
-            myUser=userService.selectUserByName(user.getUserName(),user.getPassword());
+            pageTimes = count/pageSize;
+        }else
+        {
+            pageTimes = count/pageSize + 1;
+        }
+        model.addAttribute("pageTimes", pageTimes);
 
-            if(myUser!=null)
-            {
-                session.setAttribute("user",myUser);
+        //计算应该选择的信息，是从哪条开始，哪条结束
+        int startRow = (Integer.parseInt(page)-1) * pageSize;
+        users = userService.getUserByPage(startRow, pageSize);
 
-                perms= permissionService.getPermissionByUserId(myUser.getId());
+        ModelMap modelMap = new ModelMap();
 
-                Set<String> perms_str= new HashSet<String>();
+        //要返回的数据
+        modelMap.addAttribute("users",users);
+        model.addAttribute("userNum",count); //总条数
+        model.addAttribute("currentPage", Integer.parseInt(page));
 
-                for(Permission perm:perms)
-                {
-                    perms_str.add(perm.getPermission());
-                }
-
-                session.setAttribute("perms",perms_str);
-                return "redirect:../hellow";
-            }else
-            {
-                //将表示失败的数据写回到页面上
-                request.setAttribute("msg","登录失败");
-                request.setAttribute("ok","2"); //0表示失败
-                //request.getRequestDispatcher("login/login");
-                //return "redirect:login";
-                return "login/login";
-            }
-        }else  return "login";
-        //return "login";
+        return new ModelAndView("userPage", modelMap);
     }
 }
 

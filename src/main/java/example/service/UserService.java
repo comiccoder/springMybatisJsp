@@ -48,11 +48,19 @@ public class UserService {
         return userDao.getUserVoByPage(startRow,pageSize);
     }
 
-    //通过用户名字查用户
+    //通过用户名字查用户--用户登陆的使用
     public User selectUserByName(String name, String pass)
     {
         return userDao.selectUserByName(name,pass);
     }
+
+    //通过用户名字查用户--用户登陆的使用
+    public User findUserByName(User user)
+    {
+        return userDao.findUserByName(user);
+    }
+
+
 
 }
 

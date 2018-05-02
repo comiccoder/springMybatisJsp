@@ -17,13 +17,14 @@ public interface UserDao
     int getCount();
 
     //查找用户是否存在
-    User selectUserByName(@Param("userName")String name, @Param("pass")String pass);
+    User selectUserByName(@Param("userName")String name, @Param("password")String password);
 
     List<User> getUserByPage(@Param("startRow")int startRow, @Param("pageSize")int pageSize);
 
     //Vo分页
     List<UserVo> getUserVoByPage(@Param("startRow")int startRow, @Param("pageSize")int pageSize);
 
+    User findUserByName(User user);
 }
 
 

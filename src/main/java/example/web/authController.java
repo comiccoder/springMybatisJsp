@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 public class authController
 {
+
+    /*
     // 配置注解权限, 允许身份为admin, 或者说允许权限为admin的人访问
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
     @Access(authorities = {"user/list"})
@@ -17,9 +19,11 @@ public class authController
         return "login/admin";
     }
 
+
     @RequestMapping(value = "/noAuth", method = RequestMethod.GET)
     public String noAuth() {
         return "login/noAuth";
     }
+    */
 
 }

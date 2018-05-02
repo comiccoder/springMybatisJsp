@@ -28,6 +28,12 @@ public class mySpringMVCConfig extends WebMvcConfigurerAdapter
     public void addInterceptors(InterceptorRegistry registry)
     {
         registry.addInterceptor(myInterceptor()).excludePathPatterns("/static/*")
-                .excludePathPatterns("/error").addPathPatterns("/**").excludePathPatterns("/user/login");
+                .excludePathPatterns("/")
+                .excludePathPatterns("/index")
+                .excludePathPatterns("/admin")
+                .excludePathPatterns("/admin/login")
+                .excludePathPatterns("/error")
+                .excludePathPatterns("/noAuth/*")
+                .addPathPatterns("/**");
     }
 }
